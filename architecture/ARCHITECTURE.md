@@ -9,13 +9,13 @@ enough to talk through what sits around the model call and why.
 
 ```mermaid
 flowchart LR
-  PD["Product Data<br/>PIM/PLM + SAP → Catalog"]
-  GW["Model Gateway<br/>auth · routing · logging"]
-  GRD["Guardrails<br/>PII redaction + grounding check"]
-  MODEL["Model Layer<br/>Bedrock: Claude + Stable Diffusion"]
+  PD["Product Data<br/>PIM/PLM + SAP Product Master"]
+  GW["Model Gateway<br/>API Gateway + Lambda"]
+  GRD["Guardrails<br/>Amazon Comprehend (PII) + Bedrock Guardrails"]
+  MODEL["Model Layer<br/>Amazon Bedrock: Claude + Stable Diffusion"]
   REL["Reliability Check<br/>retry / fallback model"]
   OUT["Delivery<br/>OMS · Storefront/PDP · Line Sheets · CMS"]
-  OBS["Observability<br/>CloudWatch + cost dashboard"]
+  OBS["Observability<br/>CloudWatch + Cost Explorer"]
   Q["Queue<br/>EventBridge/SQS (bulk jobs)"]
 
   PD --> GW
@@ -33,21 +33,21 @@ the same diagram.
 
 ## Walkthrough
 
-**Product Data.** Attributes come from the PIM/PLM and SAP product master, synced
-into a catalog store — a verified system of record, not free text someone types in.
-The MVP's form stands in for this; a production version would hydrate a request from
-the catalog directly.
+**Product Data.** Attributes come from the PIM/PLM and SAP product master — a
+verified system of record, not free text someone types in. The MVP's form stands in
+for this; a production version would hydrate a request from those systems directly.
 
-**Model Gateway.** A single front door for every model call — authenticates the
-caller, logs the request/response, and is model-agnostic (it knows how to call "the
-language model," not "Claude specifically"). That's what lets a model get swapped or
-a fallback added without touching every use case built on top of it.
+**Model Gateway.** A single front door for every model call — API Gateway in front of
+a Lambda router that authenticates the caller, logs the request/response, and is
+model-agnostic (it knows how to call "the language model," not "Claude
+specifically"). That's what lets a model get swapped or a fallback added without
+touching every use case built on top of it.
 
-**Guardrails.** PII redaction on the way in, and a grounding check on the way out,
-before anything is allowed downstream. This is the production version of the MVP's
-`governance` block: in the MVP the model self-reports whether it stayed grounded; in
-production that self-report is a signal, not a control — something else verifies it
-against the source attributes.
+**Guardrails.** Amazon Comprehend redacts PII on the way in, and Bedrock Guardrails
+plus a grounding check run on the way out, before anything is allowed downstream.
+This is the production version of the MVP's `governance` block: in the MVP the model
+self-reports whether it stayed grounded; in production that self-report is a signal,
+not a control — something else verifies it against the source attributes.
 
 **Model Layer.** A privately-instanced Claude on Amazon Bedrock for language, Stable
 Diffusion for imagery. Private instancing matters for a brand like Skechers because
@@ -64,9 +64,10 @@ storefront/PDP, the wholesale line-sheet workflow, the DTC CMS. The MVP stops at
 "render the JSON on screen"; production stops at "the PDP is updated."
 
 **Observability & Queue (cross-cutting).** CloudWatch taps the gateway and model
-layer so spend and latency are visible without reading raw logs. A queue
-(EventBridge/SQS) in front of the gateway absorbs bulk jobs — thousands of SKUs
-ahead of a launch — instead of firing thousands of synchronous calls at once.
+layer for logs and metrics, and AWS Cost Explorer rolls that up into spend per use
+case so platform owners aren't reading raw logs to answer "what is this costing us."
+A queue (EventBridge/SQS) in front of the gateway absorbs bulk jobs — thousands of
+SKUs ahead of a launch — instead of firing thousands of synchronous calls at once.
 
 ## NFR mapping
 
@@ -80,7 +81,7 @@ ahead of a launch — instead of firing thousands of synchronous calls at once.
 
 ## What the MVP deliberately does not do
 
-- No retrieval — attributes come from the form, not the catalog.
+- No retrieval — attributes come from the form, not PIM/PLM/SAP Product Master.
 - No independent grounding verification — the `governance` block is the model's
   self-report, not a second system checking it.
 - No queueing, retries, or fallback model — one call, one response, and a friendly

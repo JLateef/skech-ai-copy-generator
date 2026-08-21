@@ -82,13 +82,13 @@
 <div class="panel">
   <pre class="mermaid">
 flowchart LR
-  PD["Product Data<br/>PIM/PLM + SAP → Catalog"]
-  GW["Model Gateway<br/>auth · routing · logging"]
-  GRD["Guardrails<br/>PII redaction + grounding check"]
-  MODEL["Model Layer<br/>Bedrock: Claude + Stable Diffusion"]
+  PD["Product Data<br/>PIM/PLM + SAP Product Master"]
+  GW["Model Gateway<br/>API Gateway + Lambda"]
+  GRD["Guardrails<br/>Amazon Comprehend (PII) + Bedrock Guardrails"]
+  MODEL["Model Layer<br/>Amazon Bedrock: Claude + Stable Diffusion"]
   REL["Reliability Check<br/>retry / fallback model"]
   OUT["Delivery<br/>OMS · Storefront/PDP · Line Sheets · CMS"]
-  OBS["Observability<br/>CloudWatch + cost dashboard"]
+  OBS["Observability<br/>CloudWatch + Cost Explorer"]
   Q["Queue<br/>EventBridge/SQS (bulk jobs)"]
 
   PD --> GW
