@@ -9,7 +9,7 @@ enough to talk through what sits around the model call and why.
 
 ```mermaid
 flowchart LR
-  PD["Product Data<br/>PIM/PLM + SAP Product Master"]
+  PD["Product Data<br/>SAP Product Master"]
   GW["Model Gateway<br/>API Gateway + Lambda"]
   GRD["Guardrails<br/>Amazon Comprehend (PII) + Bedrock Guardrails"]
   MODEL["Model Layer<br/>Amazon Bedrock: Claude + Stable Diffusion"]
@@ -33,9 +33,9 @@ the same diagram.
 
 ## Walkthrough
 
-**Product Data.** Attributes come from the PIM/PLM and SAP product master — a
-verified system of record, not free text someone types in. The MVP's form stands in
-for this; a production version would hydrate a request from those systems directly.
+**Product Data.** Attributes come from the SAP Product Master — a verified system of
+record, not free text someone types in. The MVP's form stands in for this; a
+production version would hydrate a request from that system directly.
 
 **Model Gateway.** A single front door for every model call — API Gateway in front of
 a Lambda router that authenticates the caller, logs the request/response, and is
@@ -81,7 +81,7 @@ SKUs ahead of a launch — instead of firing thousands of synchronous calls at o
 
 ## What the MVP deliberately does not do
 
-- No retrieval — attributes come from the form, not PIM/PLM/SAP Product Master.
+- No retrieval — attributes come from the form, not SAP Product Master.
 - No independent grounding verification — the `governance` block is the model's
   self-report, not a second system checking it.
 - No queueing, retries, or fallback model — one call, one response, and a friendly

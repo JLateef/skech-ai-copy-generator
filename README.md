@@ -86,13 +86,13 @@ grounding check post-call) as a named next seam, not a gap someone would discove
 later.
 
 **Integration seams → Nike.net × SAP × eCommerce/OMS background.** The
-`ARCHITECTURE.md` diagram's **Ingestion & Product Data** subgraph (PIM/PLM + SAP
-product master → catalog store) and **Integration & Delivery** subgraph (OMS,
-storefront/PDP, wholesale line-sheet workflow, DTC CMS) are the parts of this that
-look like prior retail-platform integration work: pulling verified product data from
-a system of record instead of trusting free-text input, and landing generated content
-in the systems that actually consume it — fulfillment, storefront, and buyer-facing
-line sheets — rather than stopping at "the model returned JSON."
+`ARCHITECTURE.md` diagram's **Product Data** box (SAP Product Master) and
+**Delivery** box (OMS, storefront/PDP, wholesale line-sheet workflow, DTC CMS) are
+the parts of this that look like prior retail-platform integration work: pulling
+verified product data from a system of record instead of trusting free-text input,
+and landing generated content in the systems that actually consume it — fulfillment,
+storefront, and buyer-facing line sheets — rather than stopping at "the model
+returned JSON."
 
 **NFRs, mapped concretely, not abstractly.** Security, Scalability, Extensibility,
 Adaptability, and Self-healing each point at a specific component in the diagram (see
