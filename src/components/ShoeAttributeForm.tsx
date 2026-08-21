@@ -55,16 +55,23 @@ export function ShoeAttributeForm({ attrs, onChange, onSubmit, loading }: Props)
       </div>
 
       <div className="flex flex-wrap gap-2">
-        {SEED_EXAMPLES.map((ex) => (
-          <button
-            key={ex.label}
-            type="button"
-            onClick={() => onChange(ex.attrs)}
-            className="rounded-full border border-slate-300 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100"
-          >
-            {ex.label}
-          </button>
-        ))}
+        {SEED_EXAMPLES.map((ex) => {
+          const selected = JSON.stringify(ex.attrs) === JSON.stringify(attrs);
+          return (
+            <button
+              key={ex.label}
+              type="button"
+              onClick={() => onChange(ex.attrs)}
+              className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                selected
+                  ? "border-blue-900 bg-blue-900 text-white"
+                  : "border-slate-300 bg-slate-50 text-slate-700 hover:bg-slate-100"
+              }`}
+            >
+              {ex.label}
+            </button>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
